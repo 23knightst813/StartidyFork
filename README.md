@@ -14,28 +14,8 @@ AI-powered CLI tool to automatically organize your GitHub Stars into Lists.
 - **Step-by-Step or Full Automation**: Run individual steps or execute the entire workflow at once
 - **Batch Processing**: Parallel processing of 20 repositories at a time for faster classification
 
-## Category Examples
-
-```
-Lang: Python       Lang: JS & TS      Lang: Go           Lang: Rust
-Lang: Java         Lang: C & C++      Lang: ETC
-
-AI: LLM & Chatbot  AI: Agent          AI: Image & Video  AI: RAG & Data
-AI: Voice & Audio  AI: ETC
-
-Web: Frontend      Web: Backend       Web: Crawler       Web: Mobile App
-Web: ETC
-
-Infra: Docker      Infra: Security    Infra: DB          Infra: Data & ML
-Infra: ETC
-
-Type: Self-Hosted  Type: App & Tool   Type: Starter      Type: Resource
-Type: ETC
-```
 
 ## Installation
-
-
 
 ### From Source
 
