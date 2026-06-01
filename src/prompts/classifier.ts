@@ -36,6 +36,11 @@ export function buildBatchClassifierPrompt(
   const minCats = config.minCategoriesPerRepo;
   const maxCats = config.maxCategoriesPerRepo;
 
+  let requirementText = `- Select **at least ${minCats}, maximum ${maxCats}** categories for each repository`;
+  if (maxCats === 1) {
+    requirementText = `- Select **exactly 1** most appropriate category for each repository`;
+  }
+
   return `Analyze the following ${repos.length} GitHub repositories and select the most appropriate categories for each.
 
 ## Available Categories (${categories.length}):
@@ -45,8 +50,8 @@ ${categoryList}
 ${repoList}
 
 ## Requirements:
-- Select **at least ${minCats}, maximum ${maxCats}** categories for each repository
-- Prefer selecting ${maxCats} categories when possible (classify from multiple perspectives)
+${requirementText}
+- If a repository is clearly specific to an operating system (Linux, MacOS, etc.), prioritize the corresponding "OS:" category if available.
 - Use exact category names from the list above only
 
 Classify all ${repos.length} repositories without exception.`;
@@ -87,6 +92,6 @@ ${readmeSnippet}
 ${categoryList}
 
 ## Requirements:
-1. Select **${config.minCategoriesPerRepo}-${config.maxCategoriesPerRepo}** most appropriate categories for this repository
+1. Select **exactly 1** most appropriate category for this repository
 2. Use exact category names from the list above`;
 }

@@ -34,17 +34,38 @@ export async function classifyAndAddRepos(
   createdLists: Map<string, CreatedList>,
 ): Promise<ClassifyStats> {
   const batchSize = config.classifyBatchSize;
-  const totalBatches = Math.ceil(repos.length / batchSize);
 
-  console.log(`\n📂 Classifying ${repos.length} repositories in batches of ${batchSize}...\n`);
+  // Separate personal repos from others
+  const personalRepoName = "Starred: Personal";
+  const personalRepos = repos.filter(r => r.owner.login === config.githubUsername);
+  const otherRepos = repos.filter(r => r.owner.login !== config.githubUsername);
+
+  console.log(`\n📂 Found ${personalRepos.length} personal repos and ${otherRepos.length} others.`);
+  console.log(`📂 Classifying ${otherRepos.length} repositories in batches of ${batchSize}...\n`);
 
   let success = 0;
   let failed = 0;
 
+  // Step 0: Add personal repos to their own list immediately
+  if (personalRepos.length > 0 && createdLists.has(personalRepoName)) {
+    console.log(`── Adding ${personalRepos.length} Personal Repos ──`);
+    const personalResult = await addReposToLists(
+      config,
+      personalRepos,
+      new Map(personalRepos.map(r => [`${r.owner.login}/${r.name}`, [personalRepoName]])),
+      createdLists
+    );
+    for (const r of personalResult) {
+      if (r.success) success++; else failed++;
+    }
+  }
+
+  const totalBatches = Math.ceil(otherRepos.length / batchSize);
+
   for (let batchIdx = 0; batchIdx < totalBatches; batchIdx++) {
     const batchStart = batchIdx * batchSize;
-    const batchEnd = Math.min(batchStart + batchSize, repos.length);
-    const batchRepos = repos.slice(batchStart, batchEnd);
+    const batchEnd = Math.min(batchStart + batchSize, otherRepos.length);
+    const batchRepos = otherRepos.slice(batchStart, batchEnd);
 
     console.log(`── Batch ${batchIdx + 1}/${totalBatches} (${batchStart + 1}-${batchEnd}) ──`);
 
@@ -144,7 +165,8 @@ async function addReposToLists(
     batchRepos,
     async (repo): Promise<ClassifyResult> => {
       const repoId = `${repo.owner.login}/${repo.name}`;
-      const categoryNames = results.get(repoId) || [];
+      // Strictly take only the first category return by the AI
+      const categoryNames = (results.get(repoId) || []).slice(0, 1);
 
       try {
         const listIds = categoryNames

@@ -245,6 +245,11 @@ export async function createGitHubList(
   description?: string,
   isPrivate: boolean = true,
 ): Promise<CreateListResponse["createUserList"]> {
+  console.log(`\n[DEBUG] createGitHubList called with:`);
+  console.log(`- name: "${name}"`);
+  console.log(`- description: "${description}"`);
+  console.log(`- isPrivate: ${isPrivate}`);
+  
   const mutation = `
     mutation CreateUserList($name: String!, $description: String, $isPrivate: Boolean!) {
       createUserList(input: {
@@ -268,13 +273,22 @@ export async function createGitHubList(
     }
   `;
 
-  const data = await graphql<CreateListResponse>(token, mutation, {
-    name,
-    description: description || null,
-    isPrivate,
-  });
+  try {
+    const data = await graphql<CreateListResponse>(token, mutation, {
+      name,
+      description: description || null,
+      isPrivate,
+    });
 
-  return data.createUserList;
+    console.log(`[DEBUG] Successfully created list "${name}" with ID: ${data.createUserList.list.id}`);
+    return data.createUserList;
+  } catch (error: any) {
+    console.error(`[DEBUG] Failed to create list "${name}":`);
+    console.error(`- Error: ${error.message}`);
+    if (error.statusCode) console.error(`- Status Code: ${error.statusCode}`);
+    if (error.errors) console.error(`- GraphQL Errors: ${JSON.stringify(error.errors, null, 2)}`);
+    throw error;
+  }
 }
 
 /**

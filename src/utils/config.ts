@@ -93,8 +93,8 @@ export function loadConfig(): Config {
     geminiApiKey,
 
     // Category settings
-    maxCategories: parseIntEnv("MAX_CATEGORIES", 32),
-    maxCategoriesPerRepo: parseIntEnv("MAX_CATEGORIES_PER_REPO", 3),
+    maxCategories: parseIntEnv("MAX_CATEGORIES", 6),
+    maxCategoriesPerRepo: parseIntEnv("MAX_CATEGORIES_PER_REPO", 1),
     minCategoriesPerRepo: parseIntEnv("MIN_CATEGORIES_PER_REPO", 1),
 
     // Batch processing settings
@@ -108,7 +108,7 @@ export function loadConfig(): Config {
     githubRequestDelay: parseIntEnv("GITHUB_REQUEST_DELAY", 100),
 
     // Gemini model settings
-    geminiModel: process.env.GEMINI_MODEL || "gemini-2.5-flash",
+    geminiModel: process.env.GEMINI_MODEL || "gemini-2.5-flash-lite",
     geminiTemperaturePlanning: parseFloatEnv("GEMINI_TEMPERATURE_PLANNING", 0.7),
     geminiTemperatureClassify: parseFloatEnv("GEMINI_TEMPERATURE_CLASSIFY", 0.3),
     geminiMaxTokensPlanning: parseIntEnv("GEMINI_MAX_TOKENS_PLANNING", 65536),

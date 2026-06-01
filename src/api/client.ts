@@ -98,6 +98,9 @@ export async function graphql<T = unknown>(
   query: string,
   variables?: Record<string, unknown>,
 ): Promise<T> {
+  console.log(`\n[DEBUG] Executing GraphQL Query:`);
+  console.log(`[DEBUG] Variables: ${JSON.stringify(variables, null, 2)}`);
+  
   const response = await fetchWithRetry(GITHUB_GRAPHQL_URL, {
     method: "POST",
     headers: {
@@ -108,8 +111,11 @@ export async function graphql<T = unknown>(
     body: JSON.stringify({ query, variables }),
   });
 
+  console.log(`[DEBUG] Received GraphQL Response Status: ${response.status}`);
+
   if (!response.ok) {
     const errorText = await response.text();
+    console.error(`[DEBUG] GraphQL Response Error Text: ${errorText}`);
     throw new GitHubAPIError(
       `GitHub API request failed (${response.status}): ${errorText}`,
       response.status,
@@ -119,6 +125,7 @@ export async function graphql<T = unknown>(
   const result: GraphQLResponse<T> = await response.json();
 
   if (result.errors) {
+    console.error(`[DEBUG] GraphQL Logical Errors: ${JSON.stringify(result.errors, null, 2)}`);
     throw new GitHubAPIError(
       `GraphQL Error: ${result.errors.map((e) => e.message).join(", ")}`,
       undefined,
@@ -127,9 +134,11 @@ export async function graphql<T = unknown>(
   }
 
   if (!result.data) {
+    console.warn(`[DEBUG] GraphQL Data is empty`);
     throw new GitHubAPIError("GitHub API returned empty data");
   }
 
+  console.log(`[DEBUG] GraphQL execution successful`);
   return result.data;
 }
 

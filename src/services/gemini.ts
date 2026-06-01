@@ -84,12 +84,6 @@ export class GeminiService {
         keywords: [],
       }));
 
-      if (categories.length !== this.config.maxCategories) {
-        console.warn(
-          `Warning: Expected ${this.config.maxCategories} categories, got ${categories.length}`,
-        );
-      }
-
       return categories;
     } catch (error) {
       console.error("Failed to parse category response:", error);

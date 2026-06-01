@@ -229,15 +229,8 @@ async function deleteExistingLists(config: Config) {
 
   spinner.stop();
 
-  const shouldDelete = await confirm({
-    message: `Delete existing ${data.totalLists} Lists?`,
-    default: true,
-  });
-
-  if (!shouldDelete) {
-    console.log("Cancelled.");
-    process.exit(0);
-  }
+  // Bypassing confirmation to delete all lists first as requested
+  console.log(`\n🗑️ Deleting all existing ${data.totalLists} Lists...`);
 
   const deleteSpinner = ora(`Deleting Lists... (0/${data.totalLists})`).start();
   const deletedCount = await deleteAllGitHubLists(
@@ -258,7 +251,13 @@ async function createLists(
   const createdLists = new Map<string, CreatedList>();
   let created = 0;
 
-  for (const category of categories) {
+  // Add personal list to the categories
+  const allCategories = [
+    { name: "Starred: Personal", description: "My own repositories that I have starred." },
+    ...categories
+  ];
+
+  for (const category of allCategories) {
     try {
       const result = await createGitHubList(
         config.githubToken,
@@ -274,11 +273,15 @@ async function createLists(
       });
 
       created++;
-      spinner.text = `Creating Lists... (${created}/${categories.length})`;
+      spinner.text = `Creating Lists... (${created}/${allCategories.length})`;
 
       await delay(config.listCreateDelay);
-    } catch (error) {
+    } catch (error: any) {
       console.warn(`\n  ⚠️ Failed to create "${category.name}"`);
+      console.warn(`  [DEBUG] Error message: ${error.message}`);
+      if (error.errors) {
+        console.warn(`  [DEBUG] Details: ${JSON.stringify(error.errors, null, 2)}`);
+      }
     }
   }
 
