@@ -1,4 +1,4 @@
-# Startidy
+# A Startidy Fork What Makes Good Lists Example [Here](https://github.com/23knightst813?tab=stars)
 
 English | [한국어](README.ko.md)
 
@@ -35,17 +35,7 @@ Type: ETC
 
 ## Installation
 
-### Global Install via npm (Recommended)
 
-```bash
-npm install -g startidy
-```
-
-After installation, you can use the `startidy` command directly:
-
-```bash
-startidy run
-```
 
 ### From Source
 
@@ -60,8 +50,10 @@ npm install
 # Build
 npm run build
 
-# Link globally
-npm link
+# Get Github Token [Here](https://github.com/settings/tokens) -> Make A legacy one with repo perms
+
+# Run
+$ node dist/index.js run     --token ghp_*   --username GitHubUserName   --gemini-key AQ.*   runnpm run build
 ```
 
 ## Configuration
